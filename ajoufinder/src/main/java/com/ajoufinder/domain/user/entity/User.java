@@ -7,7 +7,11 @@ import com.ajoufinder.domain.user.entity.constant.UserCategory;
 import com.ajoufinder.domain.user.entity.constant.UserStatus;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +19,7 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends TimeStamp {
   @Id
   @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -65,4 +70,19 @@ public class User extends TimeStamp {
   @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
   @JsonManagedReference
   private List<Board>boards=new ArrayList<>();
+
+  @Builder
+  public User(String name,String email, String password, String nickname, String major, UserCategory category ){
+    this.name = name;
+    this.email = email;
+    this.password = password;
+    this.nickname = nickname;
+    this.major =major;
+    this.category=category;
+
+  }
+
+  public void passwordEncode(PasswordEncoder passwordEncoder){
+    this.password=passwordEncoder.encode(this.password);
+  }
 }
