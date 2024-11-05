@@ -41,3 +41,13 @@ src/**/build/
 gradlew
 gradlew.bat
 gradle-wrapper.properties
+
+### resources
+ajoufinder/src/main/generated/
+*.yaml
+*.yml
+*.sql
+
+
+# ENV FILE
+.env
