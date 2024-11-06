@@ -2,8 +2,10 @@ package com.ajoufinder.api.controller.user;
 
 import com.ajoufinder.api.controller.user.dto.request.UserCreateRequestDto;
 import com.ajoufinder.api.controller.user.dto.request.UserLoginRequestDto;
+import com.ajoufinder.api.controller.user.dto.response.UserCreateResponseDto;
 import com.ajoufinder.api.service.user.UserCommandService;
 import com.ajoufinder.api.service.user.UserQueryService;
+import com.ajoufinder.domain.user.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,9 +21,10 @@ public class UserController {
   private final UserQueryService userQueryService;
 
   @PostMapping("/register")
-  public ResponseEntity<Void> register(@RequestBody @Valid UserCreateRequestDto dto) {
-    userCommandService.createUser(dto);
-    return ResponseEntity.status(HttpStatus.CREATED).build();
+  public ResponseEntity<UserCreateResponseDto> register(@RequestBody @Valid UserCreateRequestDto requestDto) {
+    User user=userCommandService.createUser(requestDto);
+    UserCreateResponseDto responseDto = UserCreateResponseDto.from(user);
+    return new ResponseEntity<>(responseDto,HttpStatus.CREATED);
   }
 
   @PostMapping("/login")
