@@ -1,6 +1,7 @@
 package com.ajoufinder.api.controller.user;
 
 import com.ajoufinder.api.controller.user.dto.request.UserCreateRequestDto;
+import com.ajoufinder.api.controller.user.dto.request.UserLoginRequestDto;
 import com.ajoufinder.api.service.user.UserCommandService;
 import com.ajoufinder.api.service.user.UserQueryService;
 import jakarta.validation.Valid;
@@ -22,4 +23,11 @@ public class UserController {
     userCommandService.createUser(dto);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
+
+  @PostMapping("/login")
+  public void login(@RequestBody @Valid UserLoginRequestDto dto){
+//  return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
+
 }
