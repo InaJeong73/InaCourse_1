@@ -1,5 +1,6 @@
 package com.ajoufinder.api.controller.user.dto.request;
 
+import com.ajoufinder.common.valid.annotation.ValidAjouEmail;
 import com.ajoufinder.common.valid.annotation.ValidEnum;
 import com.ajoufinder.domain.user.entity.User;
 import com.ajoufinder.domain.user.entity.constant.Role;
@@ -20,7 +21,7 @@ public record UserCreateRequestDto(
         String name,
 
         @NotBlank
-        @Email
+        @ValidAjouEmail
         String email,
 
         @NotBlank
