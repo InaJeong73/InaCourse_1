@@ -35,6 +35,9 @@ public class User extends TimeStamp {
   @Column(nullable = false, unique = true, length = 100)
   private String email;
 
+  @Column(name = "email_verified", nullable = false)
+  private boolean emailVerified;
+
   @Column(nullable=false,unique=true,length=100)
   private String password;
 
@@ -72,14 +75,16 @@ public class User extends TimeStamp {
   private List<Board>boards=new ArrayList<>();
 
   @Builder
-  public User(String name,String email, String password, String nickname, String major, UserCategory category ){
+  public User(String name,String email, String password, String nickname, String major, UserCategory category,UserStatus status, Role role, String refreshToken){
     this.name = name;
     this.email = email;
     this.password = password;
     this.nickname = nickname;
     this.major =major;
     this.category=category;
-
+    this.status=status;
+    this.role=role;
+    this.refreshToken=refreshToken;
   }
 
   public void passwordEncode(PasswordEncoder passwordEncoder){
