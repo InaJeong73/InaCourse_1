@@ -8,12 +8,16 @@ import com.ajoufinder.domain.location.entity.Location;
 import com.ajoufinder.domain.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Board extends TimeStamp {
   @Id
   @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -57,6 +61,20 @@ public class Board extends TimeStamp {
   @Column(name="item_type",nullable=false)
   private ItemType itemType;
 
+  @Builder
+  public Board(User user,Location location,String title,String description,LocalDateTime relatedDate,String imageUrl,BoardStatus status,BoardCategory category,String detailedLocation,ItemType itemType){
+    this.user = user;
+    this.location = location;
+    this.title = title;
+    this.description = description;
+    this.relatedDate = relatedDate;
+    this.imageUrl = imageUrl;
+    this.status = status;
+    this.category = category;
+    this.detailedLocation = detailedLocation;
+    this.itemType = itemType;
+  }
+
   public void assignUser(User user){
     this.user = user;
     user.getBoards().add(this);
@@ -64,5 +82,9 @@ public class Board extends TimeStamp {
   public void assignLocation(Location location){
     this.location = location;
     location.getBoards().add(this);
+  }
+
+  public void changeStatus(BoardStatus status){
+    this.status = status;
   }
 }
