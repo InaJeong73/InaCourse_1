@@ -83,4 +83,8 @@ public class Board extends TimeStamp {
     this.location = location;
     location.getBoards().add(this);
   }
+
+  public void changeStatus(BoardStatus status){
+    this.status = status;
+  }
 }
