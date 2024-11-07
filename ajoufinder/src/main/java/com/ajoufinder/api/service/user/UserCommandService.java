@@ -20,12 +20,6 @@ public class UserCommandService {
   private final PasswordEncoder passwordEncoder;
 
   public User createUser(UserCreateRequestDto dto) {
-    if(userRepository.existsByEmail(dto.email())){
-      throw new UserException(ExceptionCode.DUPLICATED_USER_EMAIL);
-    }
-    if(userRepository.existsByNickname(dto.nickname())){
-      throw new UserException(ExceptionCode.DUPLICATED_USER_NICKNAME);
-    }
     User user=dto.toEntity();
     user.passwordEncode(passwordEncoder);
     userRepository.save(user);
