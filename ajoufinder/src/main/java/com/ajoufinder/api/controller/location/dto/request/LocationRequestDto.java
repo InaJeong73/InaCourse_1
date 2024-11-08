@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.NotBlank;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record LocationCreateRequestDto(
+public record LocationRequestDto(
         @NotBlank(message="위치/건물명은 필수 입력값입니다.")
         String locationName
 ){

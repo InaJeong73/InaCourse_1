@@ -1,8 +1,9 @@
 package com.ajoufinder.api.controller.location;
 
-import com.ajoufinder.api.controller.location.dto.request.LocationCreateRequestDto;
+import com.ajoufinder.api.controller.location.dto.request.LocationRequestDto;
 import com.ajoufinder.api.service.location.LocationCommandService;
 import com.ajoufinder.api.service.location.LocationQueryService;
+import com.ajoufinder.domain.location.entity.constant.LocationStatus;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,14 +18,26 @@ public class LocationController {
   private final LocationQueryService locationQueryService;
 
   @PostMapping
-  public ResponseEntity<String> createLocation(@RequestBody @Valid LocationCreateRequestDto requestDto) {
+  public ResponseEntity<String> createLocation(@RequestBody @Valid LocationRequestDto requestDto) {
     locationCommandService.createLocation(requestDto);
-    return new ResponseEntity<>("새로운 위치가 성공적으로 추가되었습니다.",HttpStatus.CREATED);
+    return new ResponseEntity<>("위치가 추가되었습니다.",HttpStatus.CREATED);
   }
 
   @DeleteMapping("/{locationId}")
   public ResponseEntity<Void> deleteLocation(@PathVariable Long locationId) {
-    locationCommandService.deleteLocation(locationId);
+    locationCommandService.updateStatus(locationId, LocationStatus.DELETED);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+  }
+
+  @PatchMapping("/{locationId}/activate")
+  public ResponseEntity<String> activateLocation(@PathVariable Long locationId) {
+    locationCommandService.updateStatus(locationId, LocationStatus.ACTIVE);
+    return new ResponseEntity<>("위치가 복원되었습니다.",HttpStatus.OK);
+  }
+
+  @PatchMapping("/{locationId}/update")
+  public ResponseEntity<String>updateLocation(@RequestBody LocationRequestDto requestDto, @PathVariable Long locationId) {
+    locationCommandService.updateLocation(requestDto, locationId);
+    return new ResponseEntity<>("위치 정보가 수정되었습니다.",HttpStatus.OK);
   }
 }
