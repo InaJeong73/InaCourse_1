@@ -1,5 +1,6 @@
 package com.ajoufinder.domain.location.entity;
 
+import com.ajoufinder.api.controller.location.dto.request.LocationRequestDto;
 import com.ajoufinder.domain.TimeStamp;
 import com.ajoufinder.domain.board.entity.Board;
 import com.ajoufinder.domain.location.entity.constant.LocationStatus;
@@ -39,5 +40,9 @@ public class Location extends TimeStamp {
 
   public void changeStatus(LocationStatus newStatus) {
     this.status=newStatus;
+  }
+
+  public void updateFromDto(LocationRequestDto dto){
+    this.locationName=dto.locationName();
   }
 }
