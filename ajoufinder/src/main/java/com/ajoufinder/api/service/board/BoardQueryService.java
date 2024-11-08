@@ -1,5 +1,6 @@
 package com.ajoufinder.api.service.board;
 
+import com.ajoufinder.api.controller.board.dto.response.BoardDetailInfoResponseDto;
 import com.ajoufinder.common.exception.ExceptionCode;
 import com.ajoufinder.common.exception.board.BoardException;
 import com.ajoufinder.domain.board.entity.Board;
@@ -15,5 +16,13 @@ public class BoardQueryService {
 
   public Board getBoardByIdOrThrow(Long boardId) {
     return boardRepository.findById(boardId).orElseThrow(()->new BoardException(ExceptionCode.NOT_FOUND_BOARD));
+  }
+
+  public BoardDetailInfoResponseDto getBoard(Long boardId){
+    BoardDetailInfoResponseDto boardDetailInfoResponseDto=boardRepository.findBoardWithUserAndLocation(boardId);
+    if(boardDetailInfoResponseDto==null){
+      throw new BoardException(ExceptionCode.NOT_FOUND_BOARD);
+    }
+    return boardDetailInfoResponseDto;
   }
 }

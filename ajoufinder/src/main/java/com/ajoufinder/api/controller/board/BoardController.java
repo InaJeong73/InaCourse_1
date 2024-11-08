@@ -2,6 +2,7 @@ package com.ajoufinder.api.controller.board;
 
 import com.ajoufinder.api.controller.board.dto.request.BoardCreateRequestDto;
 import com.ajoufinder.api.controller.board.dto.response.BoardCreateResponseDto;
+import com.ajoufinder.api.controller.board.dto.response.BoardDetailInfoResponseDto;
 import com.ajoufinder.api.service.board.BoardCommandService;
 import com.ajoufinder.api.service.board.BoardQueryService;
 import com.ajoufinder.domain.board.entity.Board;
@@ -25,6 +26,12 @@ public class BoardController {
     return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
   }
 
+  @GetMapping("/{boardId}")
+  public ResponseEntity<BoardDetailInfoResponseDto> getBoard(@PathVariable Long boardId) {
+    BoardDetailInfoResponseDto boardDetailInfoResponseDto=boardQueryService.getBoard(boardId);
+    return new ResponseEntity<>(boardDetailInfoResponseDto, HttpStatus.OK);
+  }
+
   @PostMapping("/found")
   public ResponseEntity<BoardCreateResponseDto> createFoundBoard(@RequestBody @Valid BoardCreateRequestDto requestDto) {
     Board board=boardCommandService.createFoundBoard(requestDto);
@@ -33,7 +40,7 @@ public class BoardController {
   }
 
   @DeleteMapping("/{boardId}")
-  public ResponseEntity<Void>deleteBoard(@PathVariable Long boardId){
+  public ResponseEntity<Void> deleteBoard(@PathVariable Long boardId){
     boardCommandService.deleteBoard(boardId);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
