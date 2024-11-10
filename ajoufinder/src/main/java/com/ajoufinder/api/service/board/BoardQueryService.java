@@ -1,11 +1,14 @@
 package com.ajoufinder.api.service.board;
 
 import com.ajoufinder.api.controller.board.dto.response.BoardDetailInfoResponseDto;
+import com.ajoufinder.api.controller.board.dto.response.BoardSimpleInfoResponseDto;
 import com.ajoufinder.common.exception.ExceptionCode;
 import com.ajoufinder.common.exception.board.BoardException;
 import com.ajoufinder.domain.board.entity.Board;
 import com.ajoufinder.domain.board.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
@@ -24,5 +27,13 @@ public class BoardQueryService {
       throw new BoardException(ExceptionCode.NOT_FOUND_BOARD);
     }
     return boardDetailInfoResponseDto;
+  }
+
+  public Page<BoardSimpleInfoResponseDto> getLostBoards(Pageable pageable) {
+    return boardRepository.getAllLostBoards(pageable);
+  }
+
+  public Page<BoardSimpleInfoResponseDto> getFoundBoards(Pageable pageable) {
+    return boardRepository.getAllFoundBoards(pageable);
   }
 }
