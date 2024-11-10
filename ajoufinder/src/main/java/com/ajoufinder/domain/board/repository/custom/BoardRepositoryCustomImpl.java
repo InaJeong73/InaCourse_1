@@ -6,6 +6,7 @@ import com.ajoufinder.domain.board.entity.Board;
 import com.ajoufinder.domain.board.entity.QBoard;
 import com.ajoufinder.domain.board.entity.constant.BoardCategory;
 import com.ajoufinder.domain.board.entity.constant.BoardStatus;
+import com.ajoufinder.domain.board.entity.constant.ItemType;
 import com.ajoufinder.domain.location.entity.QLocation;
 import com.ajoufinder.domain.user.entity.QUser;
 import com.querydsl.core.types.Projections;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,68 +60,49 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
   @Override
   public Page<BoardSimpleInfoResponseDto> getAllLostBoards(Pageable pageable) {
-    QBoard board = QBoard.board;
-
-    List<Board> boards = queryFactory
-            .selectFrom(board)
-            .where(board.category.eq(BoardCategory.LOST)
-                    .and(board.status.ne(BoardStatus.DELETED)))
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
-            .fetch();
-
-    List<BoardSimpleInfoResponseDto> dtoList = boards.stream()
-            .map(boardEntity -> new BoardSimpleInfoResponseDto(
-                    boardEntity.getUser().getUserId(),
-                    boardEntity.getUser().getNickname(),
-                    boardEntity.getLocation() != null ? boardEntity.getLocation().getLocationId() : null,
-                    boardEntity.getLocation() != null ? boardEntity.getLocation().getLocationName() : null,
-                    boardEntity.getTitle(),
-                    boardEntity.getRelatedDate(),
-                    boardEntity.getItemType()
-            ))
-            .collect(Collectors.toList());
-
-    long total = queryFactory
-            .selectFrom(board)
-            .where(board.category.eq(BoardCategory.FIND)
-                    .and(board.status.ne(BoardStatus.DELETED)))
-            .fetchCount();
-
-    return new PageImpl<>(dtoList, pageable, total);
+    return getBoardsByCategoryAndStatus(BoardCategory.LOST, pageable);
   }
 
-
+  @Override
   public Page<BoardSimpleInfoResponseDto> getAllFoundBoards(Pageable pageable) {
-    QBoard board = QBoard.board;
+    return getBoardsByCategoryAndStatus(BoardCategory.FIND, pageable);
+  }
 
-    List<Board> boards = queryFactory
-            .selectFrom(board)
-            .where(board.category.eq(BoardCategory.FIND)
+  private Page<BoardSimpleInfoResponseDto> getBoardsByCategoryAndStatus(BoardCategory category, Pageable pageable) {
+    QBoard board = QBoard.board;
+    QUser user = QUser.user;
+    QLocation location = QLocation.location;
+
+    // 게시글 조회
+    List<BoardSimpleInfoResponseDto> boards = queryFactory
+            .select(Projections.constructor(BoardSimpleInfoResponseDto.class,
+                    board.boardId,
+                    user.userId,
+                    user.nickname,
+                    location.locationId,
+                    location.locationName,
+                    board.title,
+                    board.relatedDate,
+                    board.itemType
+            ))
+            .from(board)
+            .join(board.user, user)
+            .join(board.location, location)
+            .where(board.category.eq(category)
                     .and(board.status.ne(BoardStatus.DELETED)))
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
 
-    List<BoardSimpleInfoResponseDto> dtoList = boards.stream()
-            .map(boardEntity -> new BoardSimpleInfoResponseDto(
-                    boardEntity.getUser().getUserId(),
-                    boardEntity.getUser().getNickname(),
-                    boardEntity.getLocation() != null ? boardEntity.getLocation().getLocationId() : null,
-                    boardEntity.getLocation() != null ? boardEntity.getLocation().getLocationName() : null,
-                    boardEntity.getTitle(),
-                    boardEntity.getRelatedDate(),
-                    boardEntity.getItemType()
-            ))
-            .collect(Collectors.toList());
-
+    // 총 게시물 수 계산
     long total = queryFactory
             .selectFrom(board)
-            .where(board.category.eq(BoardCategory.FIND)
+            .where(board.category.eq(category)
                     .and(board.status.ne(BoardStatus.DELETED)))
             .fetchCount();
 
-    return new PageImpl<>(dtoList, pageable, total);
+    // Page 객체로 반환
+    return new PageImpl<>(boards, pageable, total);
   }
 }
 
