@@ -1,5 +1,6 @@
 package com.ajoufinder.domain.board.entity;
 
+import com.ajoufinder.api.controller.board.dto.request.BoardRequestDto;
 import com.ajoufinder.domain.TimeStamp;
 import com.ajoufinder.domain.board.entity.constant.BoardCategory;
 import com.ajoufinder.domain.board.entity.constant.BoardStatus;
@@ -86,5 +87,31 @@ public class Board extends TimeStamp {
 
   public void changeStatus(BoardStatus status){
     this.status = status;
+  }
+
+  public void updateBoardInfo(BoardRequestDto requestDto){
+    if(!itemType.equals(requestDto.itemType())){
+      itemType=requestDto.itemType();
+    }
+    detailedLocation=requestDto.detailedLocation();
+    if(!title.equals(requestDto.title())){
+      title=requestDto.title();
+    }
+    if(!description.equals(requestDto.description())){
+      description=requestDto.description();
+    }
+    if(!relatedDate.equals(requestDto.relatedDate())){
+      relatedDate=requestDto.relatedDate();
+    }
+    imageUrl=requestDto.imageUrl();
+  }
+
+  public void updateLocationInfo(Location location){
+    if(!location.equals(this.location)){
+      this.location = location;
+    }
+  }
+  public boolean isDeleted(){
+    return this.status == BoardStatus.DELETED;
   }
 }

@@ -1,7 +1,7 @@
 package com.ajoufinder.api.controller.board;
 
-import com.ajoufinder.api.controller.board.dto.request.BoardCreateRequestDto;
-import com.ajoufinder.api.controller.board.dto.response.BoardCreateResponseDto;
+import com.ajoufinder.api.controller.board.dto.request.BoardRequestDto;
+import com.ajoufinder.api.controller.board.dto.response.BoardResponseDto;
 import com.ajoufinder.api.controller.board.dto.response.BoardDetailInfoResponseDto;
 import com.ajoufinder.api.controller.board.dto.response.BoardSimpleInfoResponseDto;
 import com.ajoufinder.api.service.board.BoardCommandService;
@@ -25,16 +25,16 @@ public class BoardController {
   private final BoardCommandService boardCommandService;
 
   @PostMapping("/lost")
-  public ResponseEntity<BoardCreateResponseDto> createLostBoard(@RequestBody @Valid BoardCreateRequestDto requestDto) {
+  public ResponseEntity<BoardResponseDto> createLostBoard(@RequestBody @Valid BoardRequestDto requestDto) {
     Board board=boardCommandService.createLostBoard(requestDto);
-    BoardCreateResponseDto responseDto = BoardCreateResponseDto.from(board);
+    BoardResponseDto responseDto = BoardResponseDto.from(board.getBoardId()," 게시글이 성공적으로 생성되었습니다.");
     return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
   }
 
   @PostMapping("/found")
-  public ResponseEntity<BoardCreateResponseDto> createFoundBoard(@RequestBody @Valid BoardCreateRequestDto requestDto) {
+  public ResponseEntity<BoardResponseDto> createFoundBoard(@RequestBody @Valid BoardRequestDto requestDto) {
     Board board=boardCommandService.createFoundBoard(requestDto);
-    BoardCreateResponseDto responseDto = BoardCreateResponseDto.from(board);
+    BoardResponseDto responseDto = BoardResponseDto.from(board.getBoardId()," 게시글이 성공적으로 생성되었습니다.");
     return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
   }
 
@@ -56,9 +56,17 @@ public class BoardController {
     return new ResponseEntity<>(boards, HttpStatus.OK);
   }
 
+  @PatchMapping("/{boardId}")
+  public ResponseEntity<BoardResponseDto> updateBoard(@PathVariable Long boardId,@RequestBody @Valid BoardRequestDto requestDto){
+    Board board=boardCommandService.updateBoard(boardId,requestDto);
+    BoardResponseDto responseDto = BoardResponseDto.from(board.getBoardId(), "게시글 수정 완료");
+    return new ResponseEntity(responseDto, HttpStatus.OK);
+  }
+
   @DeleteMapping("/{boardId}")
   public ResponseEntity<Void> deleteBoard(@PathVariable Long boardId){
     boardCommandService.deleteBoard(boardId);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
+
 }

@@ -14,9 +14,10 @@ public enum ExceptionCode{
   //Location
   NOT_FOUND_LOCATION(404, "존재하지 않는 위치입니다."),
   DUPLICATED_LOCATION(409, "이미 존재하는 위치입니다."),
-  //Board
-  NOT_FOUND_BOARD(404, "존재하지 않는 게시물입니다.");
 
+  //Board
+  NOT_FOUND_BOARD(404, "존재하지 않는 게시물입니다."),
+  ALREADY_DELETED_BOARD(400,"이미 삭제된 게시물입니다.");
 
   private final int code;
   private final String message;
