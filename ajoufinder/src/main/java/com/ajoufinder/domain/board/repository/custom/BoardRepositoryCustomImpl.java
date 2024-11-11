@@ -2,26 +2,19 @@ package com.ajoufinder.domain.board.repository.custom;
 
 import com.ajoufinder.api.controller.board.dto.response.BoardDetailInfoResponseDto;
 import com.ajoufinder.api.controller.board.dto.response.BoardSimpleInfoResponseDto;
-import com.ajoufinder.domain.board.entity.Board;
 import com.ajoufinder.domain.board.entity.QBoard;
 import com.ajoufinder.domain.board.entity.constant.BoardCategory;
 import com.ajoufinder.domain.board.entity.constant.BoardStatus;
-import com.ajoufinder.domain.board.entity.constant.ItemType;
 import com.ajoufinder.domain.location.entity.QLocation;
 import com.ajoufinder.domain.user.entity.QUser;
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Repository
@@ -68,6 +61,33 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     return getBoardsByCategoryAndStatus(BoardCategory.FIND, pageable);
   }
 
+  @Override
+  public List<BoardSimpleInfoResponseDto> getBoardsByUserId(Long userId) {
+    QBoard board = QBoard.board;
+    QUser user = QUser.user;
+    QLocation location = QLocation.location;
+
+    return queryFactory
+            .select(Projections.constructor(BoardSimpleInfoResponseDto.class,
+                    board.boardId,
+                    user.userId,
+                    user.nickname,
+                    location.locationId,
+                    location.locationName,
+                    board.title,
+                    board.relatedDate,
+                    board.itemType,
+                    board.status
+            ))
+            .from(board)
+            .join(board.user, user)
+            .join(board.location, location)
+            .where (board.status.ne(BoardStatus.DELETED)
+                    .and(user.userId.eq(userId)))
+            .fetch();
+
+  }
+
   private Page<BoardSimpleInfoResponseDto> getBoardsByCategoryAndStatus(BoardCategory category, Pageable pageable) {
     QBoard board = QBoard.board;
     QUser user = QUser.user;
@@ -83,7 +103,8 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
                     location.locationName,
                     board.title,
                     board.relatedDate,
-                    board.itemType
+                    board.itemType,
+                    board.status
             ))
             .from(board)
             .join(board.user, user)
