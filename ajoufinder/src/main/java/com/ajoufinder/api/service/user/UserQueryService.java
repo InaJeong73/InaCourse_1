@@ -1,6 +1,6 @@
 package com.ajoufinder.api.service.user;
 
-import com.ajoufinder.common.exception.AjouFinderException;
+
 import com.ajoufinder.common.exception.ExceptionCode;
 import com.ajoufinder.common.exception.user.UserException;
 import com.ajoufinder.domain.user.entity.User;
