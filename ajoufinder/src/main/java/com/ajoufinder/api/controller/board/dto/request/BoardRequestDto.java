@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record BoardCreateRequestDto(
+public record BoardRequestDto(
         @NotNull(message="사용자는 필수 입력값입니다.")
         Long userId,
 
@@ -38,7 +38,7 @@ public record BoardCreateRequestDto(
         @NotBlank(message="내용은 필수 입력값입니다.")
         String description,
 
-        @NotNull(message="습득 날짜는 필수 입력값입니다.")
+        @NotNull(message="습득 및 분실 날짜는 필수 입력값입니다.")
         LocalDateTime relatedDate,
 
         @Size(max = 255, message = "상세 위치는 최대 255자까지 허용됩니다.")
