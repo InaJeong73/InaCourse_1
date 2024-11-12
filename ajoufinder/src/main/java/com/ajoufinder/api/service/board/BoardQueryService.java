@@ -1,8 +1,9 @@
 package com.ajoufinder.api.service.board;
 
 import com.ajoufinder.api.controller.board.dto.response.BoardDetailInfoResponseDto;
+import com.ajoufinder.api.controller.board.dto.response.BoardDetailTempDto;
 import com.ajoufinder.api.controller.board.dto.response.BoardSimpleInfoResponseDto;
-import com.ajoufinder.api.controller.board.dto.response.BoardTempDto;
+import com.ajoufinder.api.controller.board.dto.response.BoardSimpleTempDto;
 import com.ajoufinder.api.service.location.LocationQueryService;
 import com.ajoufinder.api.service.user.UserQueryService;
 import com.ajoufinder.common.exception.ExceptionCode;
@@ -35,26 +36,26 @@ public class BoardQueryService {
   }
 
   public BoardDetailInfoResponseDto getBoard(Long boardId){
-    BoardDetailInfoResponseDto boardDetailInfoResponseDto=boardRepository.findBoardWithUserAndLocation(boardId);
+    BoardDetailTempDto boardDetailInfoResponseDto=boardRepository.findBoardWithUserAndLocation(boardId);
     if(boardDetailInfoResponseDto==null){
       throw new BoardException(ExceptionCode.NOT_FOUND_BOARD);
     }
-    return boardDetailInfoResponseDto;
+    return BoardDetailInfoResponseDto.from(boardDetailInfoResponseDto);
   }
 
   public Page<BoardSimpleInfoResponseDto> getLostBoards(Pageable pageable) {
-    Page<BoardTempDto>boardTempDtos= boardRepository.getAllLostBoards(pageable);
+    Page<BoardSimpleTempDto>boardTempDtos= boardRepository.getAllLostBoards(pageable);
     return boardTempDtos.map(BoardSimpleInfoResponseDto::from);
   }
 
   public Page<BoardSimpleInfoResponseDto> getFoundBoards(Pageable pageable) {
-    Page<BoardTempDto>boardTempDtos= boardRepository.getAllFoundBoards(pageable);
+    Page<BoardSimpleTempDto>boardTempDtos= boardRepository.getAllFoundBoards(pageable);
     return boardTempDtos.map(BoardSimpleInfoResponseDto::from);
   }
 
   public List<BoardSimpleInfoResponseDto> getBoardsByUserId(Long userId) {
     userQueryService.getUserByIdOrThrow(userId);
-    List<BoardTempDto>boardTempDtos= boardRepository.getBoardsByUserId(userId);
+    List<BoardSimpleTempDto>boardTempDtos= boardRepository.getBoardsByUserId(userId);
     return boardTempDtos.stream().map(BoardSimpleInfoResponseDto::from)
             .collect(Collectors.toList());
   }
@@ -86,7 +87,7 @@ public class BoardQueryService {
       throw new BoardException(ExceptionCode.INVALID_TIME_WITHOUT_DATE);
     }
 
-    Page<BoardTempDto> boardTempDtos= boardRepository.getBoardsByFilter(start, end, locationId, boardStatus, boardCategory, pageable);
+    Page<BoardSimpleTempDto> boardTempDtos= boardRepository.getBoardsByFilter(start, end, locationId, boardStatus, boardCategory, pageable);
     return boardTempDtos.map(BoardSimpleInfoResponseDto::from);
   }
 }
