@@ -1,8 +1,9 @@
 package com.ajoufinder.api.controller.board;
 
 import com.ajoufinder.api.controller.board.dto.request.BoardRequestDto;
-import com.ajoufinder.api.controller.board.dto.response.BoardResponseDto;
 import com.ajoufinder.api.controller.board.dto.response.BoardDetailInfoResponseDto;
+import com.ajoufinder.api.controller.board.dto.response.BoardResponseDto;
+import com.ajoufinder.api.controller.board.dto.response.BoardDetailTempDto;
 import com.ajoufinder.api.controller.board.dto.response.BoardSimpleInfoResponseDto;
 import com.ajoufinder.api.service.board.BoardCommandService;
 import com.ajoufinder.api.service.board.BoardQueryService;
@@ -84,10 +85,25 @@ public class BoardController {
     Page<BoardSimpleInfoResponseDto> filteredBoards = boardQueryService.getBoardsByFilter(date, time, locationId, boardStatus, BoardCategory.FIND, pageable);
     return ResponseEntity.ok(filteredBoards);
   }
+
   @PatchMapping("/{boardId}")
   public ResponseEntity<BoardResponseDto> updateBoard(@PathVariable Long boardId,@RequestBody @Valid BoardRequestDto requestDto){
     Board board=boardCommandService.updateBoard(boardId,requestDto);
     BoardResponseDto responseDto = BoardResponseDto.from(board.getBoardId(), "게시글 수정 완료");
+    return new ResponseEntity(responseDto, HttpStatus.OK);
+  }
+
+  @PatchMapping("/{boardId}/resolve")
+  public ResponseEntity<BoardResponseDto> resolveBoard(@PathVariable Long boardId){
+    Board board=boardCommandService.updateBoardStatus(boardId,BoardStatus.RESOLVED);
+    BoardResponseDto responseDto = BoardResponseDto.from(board.getBoardId(), "게시글 상태를 '해결'로 업데이트 완료");
+    return new ResponseEntity(responseDto, HttpStatus.OK);
+  }
+
+  @PatchMapping("/{boardId}/process")
+  public ResponseEntity<BoardResponseDto> processBoard(@PathVariable Long boardId){
+    Board board=boardCommandService.updateBoardStatus(boardId,BoardStatus.IN_PROGRESS);
+    BoardResponseDto responseDto = BoardResponseDto.from(board.getBoardId(), "게시글 상태를 '진행 중'으로 업데이트 완료");
     return new ResponseEntity(responseDto, HttpStatus.OK);
   }
 
