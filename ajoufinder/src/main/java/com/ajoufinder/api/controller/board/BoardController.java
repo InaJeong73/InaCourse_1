@@ -7,6 +7,8 @@ import com.ajoufinder.api.controller.board.dto.response.BoardSimpleInfoResponseD
 import com.ajoufinder.api.service.board.BoardCommandService;
 import com.ajoufinder.api.service.board.BoardQueryService;
 import com.ajoufinder.domain.board.entity.Board;
+import com.ajoufinder.domain.board.entity.constant.BoardCategory;
+import com.ajoufinder.domain.board.entity.constant.BoardStatus;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,6 +18,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @RestController
 @RequestMapping("api/v1/boards")
@@ -54,6 +59,18 @@ public class BoardController {
   public ResponseEntity<Page<BoardSimpleInfoResponseDto>> getFoundBoards(@PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
     Page<BoardSimpleInfoResponseDto> boards=boardQueryService.getFoundBoards(pageable);
     return new ResponseEntity<>(boards, HttpStatus.OK);
+  }
+
+  @GetMapping("/lost/filter")
+  public ResponseEntity<Page<BoardSimpleInfoResponseDto>> getBoardsByFilter(
+          @RequestParam(required = false) LocalDate date,  // yyyy-MM-dd 형식으로 받음 (선택적)
+          @RequestParam(required = false) LocalTime time, // HH:mm 형식으로 받음 (선택적)
+          @RequestParam(required = false) Long locationId,
+          @RequestParam(required = false) BoardStatus boardStatus,
+          Pageable pageable
+  ) {
+    Page<BoardSimpleInfoResponseDto> filteredBoards = boardQueryService.getBoardsByFilter(date, time, locationId, boardStatus, BoardCategory.LOST, pageable);
+    return ResponseEntity.ok(filteredBoards);
   }
 
   @PatchMapping("/{boardId}")

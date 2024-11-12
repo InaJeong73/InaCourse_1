@@ -1,19 +1,22 @@
 package com.ajoufinder.domain.board.repository.custom;
 
 import com.ajoufinder.api.controller.board.dto.response.BoardDetailInfoResponseDto;
-import com.ajoufinder.api.controller.board.dto.response.BoardSimpleInfoResponseDto;
+import com.ajoufinder.api.controller.board.dto.response.BoardTempDto;
 import com.ajoufinder.domain.board.entity.QBoard;
 import com.ajoufinder.domain.board.entity.constant.BoardCategory;
 import com.ajoufinder.domain.board.entity.constant.BoardStatus;
 import com.ajoufinder.domain.location.entity.QLocation;
 import com.ajoufinder.domain.user.entity.QUser;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -52,23 +55,23 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
   }
 
   @Override
-  public Page<BoardSimpleInfoResponseDto> getAllLostBoards(Pageable pageable) {
+  public Page<BoardTempDto> getAllLostBoards(Pageable pageable) {
     return getBoardsByCategoryAndStatus(BoardCategory.LOST, pageable);
   }
 
   @Override
-  public Page<BoardSimpleInfoResponseDto> getAllFoundBoards(Pageable pageable) {
+  public Page<BoardTempDto> getAllFoundBoards(Pageable pageable) {
     return getBoardsByCategoryAndStatus(BoardCategory.FIND, pageable);
   }
 
   @Override
-  public List<BoardSimpleInfoResponseDto> getBoardsByUserId(Long userId) {
+  public List<BoardTempDto> getBoardsByUserId(Long userId) {
     QBoard board = QBoard.board;
     QUser user = QUser.user;
     QLocation location = QLocation.location;
 
     return queryFactory
-            .select(Projections.constructor(BoardSimpleInfoResponseDto.class,
+            .select(Projections.constructor(BoardTempDto.class,
                     board.boardId,
                     user.userId,
                     user.nickname,
@@ -88,14 +91,73 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
   }
 
-  private Page<BoardSimpleInfoResponseDto> getBoardsByCategoryAndStatus(BoardCategory category, Pageable pageable) {
+  @Override
+  public Page<BoardTempDto> getBoardsByFilter(LocalDateTime start, LocalDateTime end, Long locationId, BoardStatus boardStatus, BoardCategory boardCategory,Pageable pageable) {
+    QBoard board = QBoard.board;
+    QUser user = QUser.user;
+    QLocation location = QLocation.location;
+
+    List<BoardTempDto> boards = queryFactory
+            .select(Projections.constructor(BoardTempDto.class,
+                    board.boardId,
+                    user.userId,
+                    user.nickname,
+                    location.locationId,
+                    location.locationName,
+                    board.title,
+                    board.relatedDate,
+                    board.itemType,
+                    board.status
+            ))
+            .from(board)
+            .join(board.user, user)
+            .join(board.location, location)
+            .where(
+                    relatedDateBetween(start, end),
+                    locationIdEq(locationId),
+                    boardStatusEq(boardStatus),
+                    boardCategoryEq(boardCategory)
+            )
+            .fetch();
+
+    long total = queryFactory
+            .selectFrom(board)
+            .leftJoin(board.location, location)
+            .where(
+                    relatedDateBetween(start, end),
+                    locationIdEq(locationId),
+                    boardStatusEq(boardStatus),
+                    boardCategoryEq(boardCategory)
+            )
+            .fetchCount();
+
+    return new PageImpl<>(boards, pageable, total);
+  }
+
+  private BooleanExpression boardStatusEq(BoardStatus boardStatus) {
+    return boardStatus != null ? QBoard.board.status.eq(boardStatus) : null;
+  }
+
+  private BooleanExpression locationIdEq(Long locationId) {
+    return locationId != null ? QLocation.location.locationId.eq(locationId) : null;
+  }
+
+  private BooleanExpression relatedDateBetween(LocalDateTime start, LocalDateTime end) {
+    return (start!=null&&end!=null)?QBoard.board.relatedDate.between(start, end):null;
+  }
+
+  private BooleanExpression boardCategoryEq(BoardCategory boardCategory){
+    return boardCategory!=null?QBoard.board.category.eq(boardCategory):null;
+  }
+
+  private Page<BoardTempDto> getBoardsByCategoryAndStatus(BoardCategory category, Pageable pageable) {
     QBoard board = QBoard.board;
     QUser user = QUser.user;
     QLocation location = QLocation.location;
 
     // 게시글 조회
-    List<BoardSimpleInfoResponseDto> boards = queryFactory
-            .select(Projections.constructor(BoardSimpleInfoResponseDto.class,
+    List<BoardTempDto> boards = queryFactory
+            .select(Projections.constructor(BoardTempDto.class,
                     board.boardId,
                     user.userId,
                     user.nickname,

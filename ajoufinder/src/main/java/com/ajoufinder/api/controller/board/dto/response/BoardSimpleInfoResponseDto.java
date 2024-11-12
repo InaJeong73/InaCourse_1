@@ -1,10 +1,10 @@
 package com.ajoufinder.api.controller.board.dto.response;
 
-import com.ajoufinder.domain.board.entity.constant.BoardStatus;
-import com.ajoufinder.domain.board.entity.constant.ItemType;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
+@Builder
 public record BoardSimpleInfoResponseDto(
         Long boardId,
         Long userId,
@@ -13,8 +13,19 @@ public record BoardSimpleInfoResponseDto(
         String locationName,
         String title,
         LocalDateTime relatedDate,
-        ItemType itemType,
-        BoardStatus boardStatus
+        String itemType,
+        String boardStatus
 ) {
-
+  public static BoardSimpleInfoResponseDto from(BoardTempDto dto) {
+    return BoardSimpleInfoResponseDto.builder().boardId(dto.boardId())
+            .userId(dto.userId())
+            .nickname(dto.nickname())
+            .locationId(dto.locationId())
+            .locationName(dto.locationName())
+            .title(dto.title())
+            .relatedDate(dto.relatedDate())
+            .itemType(dto.itemType().getText())
+            .boardStatus(dto.boardStatus().getText())
+            .build();
+  }
 }
