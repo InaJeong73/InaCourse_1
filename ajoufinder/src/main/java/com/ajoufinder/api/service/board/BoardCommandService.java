@@ -63,4 +63,10 @@ public class BoardCommandService {
   public Location checkLocation(Long locationId) {
     return locationQueryService.findLocationByIdOrThrow(locationId);
   }
+
+  public Board updateBoardStatus(Long boardId, BoardStatus boardStatus) {
+    Board board=boardQueryService.getBoardByIdOrThrow(boardId);
+    board.updateBoardStatus(boardStatus);
+    return boardRepository.save(board);
+  }
 }
