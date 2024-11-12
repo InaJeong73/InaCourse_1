@@ -62,7 +62,7 @@ public class BoardController {
   }
 
   @GetMapping("/lost/filter")
-  public ResponseEntity<Page<BoardSimpleInfoResponseDto>> getBoardsByFilter(
+  public ResponseEntity<Page<BoardSimpleInfoResponseDto>> getLostBoardsByFilter(
           @RequestParam(required = false) LocalDate date,  // yyyy-MM-dd 형식으로 받음 (선택적)
           @RequestParam(required = false) LocalTime time, // HH:mm 형식으로 받음 (선택적)
           @RequestParam(required = false) Long locationId,
@@ -73,6 +73,17 @@ public class BoardController {
     return ResponseEntity.ok(filteredBoards);
   }
 
+  @GetMapping("/found/filter")
+  public ResponseEntity<Page<BoardSimpleInfoResponseDto>> getFoundBoardsByFilter(
+          @RequestParam(required = false) LocalDate date,  // yyyy-MM-dd 형식으로 받음 (선택적)
+          @RequestParam(required = false) LocalTime time, // HH:mm 형식으로 받음 (선택적)
+          @RequestParam(required = false) Long locationId,
+          @RequestParam(required = false) BoardStatus boardStatus,
+          Pageable pageable
+  ) {
+    Page<BoardSimpleInfoResponseDto> filteredBoards = boardQueryService.getBoardsByFilter(date, time, locationId, boardStatus, BoardCategory.FIND, pageable);
+    return ResponseEntity.ok(filteredBoards);
+  }
   @PatchMapping("/{boardId}")
   public ResponseEntity<BoardResponseDto> updateBoard(@PathVariable Long boardId,@RequestBody @Valid BoardRequestDto requestDto){
     Board board=boardCommandService.updateBoard(boardId,requestDto);
