@@ -114,4 +114,8 @@ public class Board extends TimeStamp {
   public boolean isDeleted(){
     return this.status == BoardStatus.DELETED;
   }
+
+  public void updateBoardStatus(BoardStatus boardStatus){
+    this.status = boardStatus;
+  }
 }

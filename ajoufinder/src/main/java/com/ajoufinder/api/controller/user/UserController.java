@@ -1,7 +1,6 @@
 package com.ajoufinder.api.controller.user;
 
 import com.ajoufinder.api.controller.board.dto.response.BoardSimpleInfoResponseDto;
-import com.ajoufinder.api.controller.board.dto.response.BoardTempDto;
 import com.ajoufinder.api.controller.user.dto.request.UserCreateRequestDto;
 import com.ajoufinder.api.controller.user.dto.request.UserLoginRequestDto;
 import com.ajoufinder.api.controller.user.dto.response.UserCreateResponseDto;

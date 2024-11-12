@@ -16,7 +16,7 @@ public record BoardSimpleInfoResponseDto(
         String itemType,
         String boardStatus
 ) {
-  public static BoardSimpleInfoResponseDto from(BoardTempDto dto) {
+  public static BoardSimpleInfoResponseDto from(BoardSimpleTempDto dto) {
     return BoardSimpleInfoResponseDto.builder().boardId(dto.boardId())
             .userId(dto.userId())
             .nickname(dto.nickname())
