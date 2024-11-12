@@ -17,7 +17,8 @@ public enum ExceptionCode{
 
   //Board
   NOT_FOUND_BOARD(404, "존재하지 않는 게시물입니다."),
-  ALREADY_DELETED_BOARD(400,"이미 삭제된 게시물입니다.");
+  ALREADY_DELETED_BOARD(400,"이미 삭제된 게시물입니다."),
+  INVALID_TIME_WITHOUT_DATE(400, "날짜가 없고 시간만 제공된 경우 조회할 수 없습니다.");
 
   private final int code;
   private final String message;
