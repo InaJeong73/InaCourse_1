@@ -1,7 +1,7 @@
 package com.ajoufinder.domain.board.repository.custom;
 
-import com.ajoufinder.api.controller.board.dto.response.BoardDetailInfoResponseDto;
-import com.ajoufinder.api.controller.board.dto.response.BoardTempDto;
+import com.ajoufinder.api.controller.board.dto.response.BoardDetailTempDto;
+import com.ajoufinder.api.controller.board.dto.response.BoardSimpleTempDto;
 import com.ajoufinder.domain.board.entity.QBoard;
 import com.ajoufinder.domain.board.entity.constant.BoardCategory;
 import com.ajoufinder.domain.board.entity.constant.BoardStatus;
@@ -25,13 +25,13 @@ import java.util.List;
 public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
   private final JPAQueryFactory queryFactory;
 
-  public BoardDetailInfoResponseDto findBoardWithUserAndLocation(Long boardId) {
+  public BoardDetailTempDto findBoardWithUserAndLocation(Long boardId) {
     QBoard board = QBoard.board;
     QUser user = QUser.user;
     QLocation location = QLocation.location;
 
     return queryFactory
-            .select(Projections.constructor(BoardDetailInfoResponseDto.class,
+            .select(Projections.constructor(BoardDetailTempDto.class,
                     user.userId,
                     user.nickname,
                     location.locationId,
@@ -55,23 +55,23 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
   }
 
   @Override
-  public Page<BoardTempDto> getAllLostBoards(Pageable pageable) {
+  public Page<BoardSimpleTempDto> getAllLostBoards(Pageable pageable) {
     return getBoardsByCategoryAndStatus(BoardCategory.LOST, pageable);
   }
 
   @Override
-  public Page<BoardTempDto> getAllFoundBoards(Pageable pageable) {
+  public Page<BoardSimpleTempDto> getAllFoundBoards(Pageable pageable) {
     return getBoardsByCategoryAndStatus(BoardCategory.FIND, pageable);
   }
 
   @Override
-  public List<BoardTempDto> getBoardsByUserId(Long userId) {
+  public List<BoardSimpleTempDto> getBoardsByUserId(Long userId) {
     QBoard board = QBoard.board;
     QUser user = QUser.user;
     QLocation location = QLocation.location;
 
     return queryFactory
-            .select(Projections.constructor(BoardTempDto.class,
+            .select(Projections.constructor(BoardSimpleTempDto.class,
                     board.boardId,
                     user.userId,
                     user.nickname,
@@ -92,13 +92,13 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
   }
 
   @Override
-  public Page<BoardTempDto> getBoardsByFilter(LocalDateTime start, LocalDateTime end, Long locationId, BoardStatus boardStatus, BoardCategory boardCategory,Pageable pageable) {
+  public Page<BoardSimpleTempDto> getBoardsByFilter(LocalDateTime start, LocalDateTime end, Long locationId, BoardStatus boardStatus, BoardCategory boardCategory, Pageable pageable) {
     QBoard board = QBoard.board;
     QUser user = QUser.user;
     QLocation location = QLocation.location;
 
-    List<BoardTempDto> boards = queryFactory
-            .select(Projections.constructor(BoardTempDto.class,
+    List<BoardSimpleTempDto> boards = queryFactory
+            .select(Projections.constructor(BoardSimpleTempDto.class,
                     board.boardId,
                     user.userId,
                     user.nickname,
@@ -150,14 +150,14 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     return boardCategory!=null?QBoard.board.category.eq(boardCategory):null;
   }
 
-  private Page<BoardTempDto> getBoardsByCategoryAndStatus(BoardCategory category, Pageable pageable) {
+  private Page<BoardSimpleTempDto> getBoardsByCategoryAndStatus(BoardCategory category, Pageable pageable) {
     QBoard board = QBoard.board;
     QUser user = QUser.user;
     QLocation location = QLocation.location;
 
     // 게시글 조회
-    List<BoardTempDto> boards = queryFactory
-            .select(Projections.constructor(BoardTempDto.class,
+    List<BoardSimpleTempDto> boards = queryFactory
+            .select(Projections.constructor(BoardSimpleTempDto.class,
                     board.boardId,
                     user.userId,
                     user.nickname,
