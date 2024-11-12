@@ -5,7 +5,7 @@ import com.ajoufinder.domain.board.entity.constant.ItemType;
 
 import java.time.LocalDateTime;
 
-public record BoardTempDto(
+public record BoardSimpleTempDto(
         Long boardId,
         Long userId,
         String nickname,
