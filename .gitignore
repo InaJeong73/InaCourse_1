@@ -51,3 +51,6 @@ ajoufinder/src/main/generated/
 
 # ENV FILE
 .env
+
+#Docker File
+Dockerfile
