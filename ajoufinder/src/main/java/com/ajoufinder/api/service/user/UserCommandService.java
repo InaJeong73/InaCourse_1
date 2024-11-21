@@ -18,8 +18,12 @@ import org.springframework.stereotype.Service;
 public class UserCommandService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
+  private final UserQueryService userQueryService;
 
   public User createUser(UserCreateRequestDto dto) {
+    if(userQueryService.existsByEmail(dto.email())){
+      throw new UserException(ExceptionCode.DUPLICATED_USER_EMAIL);
+    }
     User user=dto.toEntity();
     user.passwordEncode(passwordEncoder);
     userRepository.save(user);
